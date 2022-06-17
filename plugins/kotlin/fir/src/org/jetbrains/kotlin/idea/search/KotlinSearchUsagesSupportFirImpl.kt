@@ -38,6 +38,7 @@ import org.jetbrains.kotlin.idea.util.ProjectRootsUtil
 import org.jetbrains.kotlin.idea.util.withResolvedCall
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.containingClass
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 import org.jetbrains.kotlin.resolve.ImportPath
@@ -107,6 +108,13 @@ class KotlinSearchUsagesSupportFirImpl(private val project: Project) : KotlinSea
     }
 
     override fun getReceiverTypeSearcherInfo(psiElement: PsiElement, isDestructionDeclarationSearch: Boolean): ReceiverTypeSearcherInfo? {
+        if (psiElement is PsiMethod) {
+            val psiClass = psiElement.containingClass
+            return ReceiverTypeSearcherInfo(psiClass) {
+                // TODO: Implement containsTypeOrDerivedInside callback that should determine whether the given KtDeclaration instance contains psiClass or its derived class or not
+                true
+            }
+        }
         return null
     }
 
